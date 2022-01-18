@@ -3,9 +3,9 @@ package main
 import (
 	"demoApi/internal/app/adapters/handlers"
 	"demoApi/internal/app/composites"
+	"demoApi/internal/app/config"
 	"flag"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"log"
 )
 
@@ -17,19 +17,15 @@ func init() {
 	flag.StringVar(&configPath, "config-path", "configs/config.yml", "path to apiserver config file")
 }
 
-func initConfig() error {
-	flag.Parse()
-	viper.AddConfigPath(configPath)
-	viper.SetConfigName("config")
-	return viper.ReadInConfig()
-}
-
 func main() {
-	if err := initConfig(); err != nil {
-		log.Fatalf("error config initialize: %s", err.Error())
+	flag.Parse()
+
+	config, err := config.LoadConfig(configPath)
+	if err != nil {
+		log.Fatalf("error init configuration file: %s", err)
 	}
 
-	router := gin.Default()
+	router := gin.New()
 
 	userComposite, err := composites.NewUserComposite()
 	if err != nil {
