@@ -6,7 +6,7 @@ import (
 	"demoApi/pkg/utils"
 	"fmt"
 	"github.com/jackc/pgconn"
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v4" // v4!!!
 	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"time"

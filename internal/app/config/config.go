@@ -1,33 +1,42 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
+	"github.com/spf13/viper"
+)
 
 type Config struct {
-	IsDebug *bool `yaml:"is_debug"`
+	IsDebug bool `yaml:"IS_DEBUG"`
 	Listen  struct {
-		Type   string `yaml:"type" env-default:"port"`
-		BindIP string `yaml:"bind_ip" env-default:"localhost"`
-		Port   string `yaml:"port" env-default:"8080"`
+		Type   string `mapstructure:"TYPE"`
+		BindIP string `mapstructure:"BIND_IP"`
+		Port   string `mapstructure:"PORT"`
 	}
 
 	PostgresDB struct {
-		Host     string `yaml:"host" env-required:"true"`
-		Port     string `yaml:"port" env-required:"true"`
-		Username string `yaml:"username"`
-		Password string `yaml:"password"`
-		Database string `yaml:"database" env-required:"true"`
+		Host     string `mapstructure:"DB_HOST, env-default="`
+		Port     string `mapstructure:"DB_PORT"`
+		Username string `mapstructure:"DB_USERNAME"`
+		Password string `mapstructure:"DB_PASSWORD"`
+		Database string `mapstructure:"DB_DATABASE"`
 	}
 }
 
 func LoadConfig(path string) (Config, error) {
+	//TODO add sync once
+	vi := viper.New()
 	config := Config{}
-	viper.AddConfigPath(path)
-	viper.SetConfigName("config")
-	viper.SetConfigType("yml")
-	if err := viper.ReadInConfig(); err != nil {
+	vi.SetConfigFile(path)
+	vi.SetConfigType("env")
+
+	vi.AutomaticEnv()
+	if err := vi.ReadInConfig(); err != nil {
 		return config, err
 	}
-	err := viper.Unmarshal(&config)
+	fmt.Println(vi.AllSettings())
+	err := vi.Unmarshal(&config.PostgresDB)
+	err = vi.Unmarshal(&config.Listen)
+	err = vi.Unmarshal(&config)
 	if err != nil {
 		return config, err
 	}

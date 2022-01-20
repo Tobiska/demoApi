@@ -1,6 +1,0 @@
-port: "8080"
-
-database_host: "127.0.0.1"
-database_name: "demodb"
-database_username: "postgres"
-database_password: "postgres"

@@ -6,7 +6,7 @@ import (
 )
 
 type Service interface {
-	GetByUUID(ctx context.Context, uuid string) (*user.User, error)
+	GetByID(ctx context.Context, id int) (*user.User, error)
 	GetAll(ctx context.Context, limit, offset int) ([]*user.User, error)
-	Create(ctx context.Context, dto *CreateUserDto) error
+	Create(ctx context.Context, dto *user.CreateUserDto) error
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"demoApi/internal/app/adapters/handlers"
 	"demoApi/internal/app/composites"
 	"demoApi/internal/app/config"
@@ -14,26 +15,30 @@ var (
 )
 
 func init() {
-	flag.StringVar(&configPath, "config-path", "configs/config.yml", "path to apiserver config file")
+	flag.StringVar(&configPath, "config-path", "configs/config.env", "path to apiserver config file")
 }
 
 func main() {
 	flag.Parse()
 
-	config, err := config.LoadConfig(configPath)
+	loadConfig, err := config.LoadConfig(configPath)
 	if err != nil {
 		log.Fatalf("error init configuration file: %s", err)
 	}
 
-	router := gin.New()
+	router := gin.Default()
 
-	userComposite, err := composites.NewUserComposite()
+	//Initialize composites
+
+	postgreSQLComposite, err := composites.NewPostgreSQLComposite(context.TODO(), loadConfig)
+
+	userComposite, err := composites.NewUserComposite(postgreSQLComposite)
 	if err != nil {
 		log.Fatal("user composite failed: ", err)
 	}
 	userComposite.Handler.Register(router)
 
-	srv := handlers.NewServer("8080", router)
+	srv := handlers.NewServer(loadConfig.Listen.Port, router)
 	if err := srv.Run(); err != nil {
 		log.Fatalf("error http server: %s", err.Error())
 	}

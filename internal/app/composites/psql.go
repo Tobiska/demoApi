@@ -6,17 +6,17 @@ import (
 	"demoApi/pkg/postgresql"
 )
 
-type PostgresComposite struct {
+type PostgreSQLComposite struct {
 	db postgresql.Client
 }
 
-func NewPostgresComposite(ctx context.Context, conf config.Config) (*PostgresComposite, error) {
+func NewPostgreSQLComposite(ctx context.Context, conf config.Config) (*PostgreSQLComposite, error) {
 	db, err := postgresql.NewClient(ctx, 5, conf)
 	if err != nil {
 		return nil, err
 	}
 
-	return &PostgresComposite{
+	return &PostgreSQLComposite{
 		db: db,
 	}, nil
 }
